@@ -1,0 +1,42 @@
+name: 🎵 גלגל"צ → Spotify Sync
+
+on:
+  schedule:
+    # כל 4 דקות (GitHub Actions מאפשר מינימום כל דקה, אבל 4 דקות = שיר ממוצע)
+    - cron: "*/4 * * * *"
+  workflow_dispatch:  # הפעלה ידנית מה-GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      # שחזור קובץ מצב מ-cache (נשמר בין ריצות!)
+      - name: Restore state
+        uses: actions/cache@v4
+        with:
+          path: state.json
+          key: galgalatz-state-${{ github.run_number }}
+          restore-keys: |
+            galgalatz-state-
+
+      - name: Run sync
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          SPOTIFY_PLAYLIST_ID: ${{ secrets.SPOTIFY_PLAYLIST_ID }}
+        run: python galgalatz_sync.py
