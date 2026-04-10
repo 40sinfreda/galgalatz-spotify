@@ -48,4 +48,4 @@ print(r.status_code)
 import re
 songs = re.findall(r'class=\"track__artist\"[^>]*>([^<]+)</[^>]+>.*?class=\"track__title\"[^>]*>([^<]+)<', r.text, re.DOTALL)
 print(songs[:3])
-"
+״
