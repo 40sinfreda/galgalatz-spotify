@@ -40,11 +40,4 @@ jobs:
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
           SPOTIFY_PLAYLIST_ID: ${{ secrets.SPOTIFY_PLAYLIST_ID }}
         run: |
-          python3 -c "
-import requests, re
-headers = {'User-Agent': 'Mozilla/5.0'}
-resp = requests.get('https://radio.menu/stations/glz-co-il-galgalatz/playlist/', headers=headers)
-print('Status:', resp.status_code)
-print('First 2000 chars:')
-print(resp.text[:2000])
-"
+          python3 -c "import requests; r=requests.get('https://radio.menu/stations/glz-co-il-galgalatz/playlist/', headers={'User-Agent':'Mozilla/5.0'}); print(r.status_code); print(r.text[:1000])"
