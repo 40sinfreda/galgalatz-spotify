@@ -12,7 +12,12 @@ r = requests.post(
 )
 token = r.json()['access_token']
 
-# Get current user ID
-me = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': f'Bearer {token}'})
-print(me.json().get('id'))
-print(me.json().get('display_name'))
+# Create new playlist
+r2 = requests.post(
+    'https://api.spotify.com/v1/users/217kazwg6fwmqxf374ivg5fvy/playlists',
+    headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+    json={'name': 'גלגלצ Live', 'public': True, 'description': 'שירים מגלגלצ עם שתילות'}
+)
+print(r2.status_code)
+print(r2.json().get('id'))
+print(r2.json().get('external_urls', {}).get('spotify'))
