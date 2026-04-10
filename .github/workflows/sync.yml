@@ -40,5 +40,4 @@ jobs:
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
           SPOTIFY_PLAYLIST_ID: ${{ secrets.SPOTIFY_PLAYLIST_ID }}
         run: |
-          cat galgalatz_sync.py | grep GALGALATZ
-          python galgalatz_sync.py
+          python3 galgalatz_sync.py
