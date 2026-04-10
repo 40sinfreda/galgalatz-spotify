@@ -12,8 +12,9 @@ r = requests.post(
 )
 token = r.json()['access_token']
 r2 = requests.get(
-    'https://api.spotify.com/v1/playlists/2SXRvfqiMBXFkaMi03npLZ',
-    headers={'Authorization': f'Bearer {token}'}
+    'https://api.spotify.com/v1/playlists/2SXRvfqiMBXFkaMi03npLZ/tracks',
+    headers={'Authorization': f'Bearer {token}'},
+    params={'limit': 5, 'fields': 'items(track(uri,name,artists(name)))', 'market': 'IL'}
 )
 print(r2.status_code)
 print(r2.text[:500])
