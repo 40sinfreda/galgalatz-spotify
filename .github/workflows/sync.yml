@@ -1,10 +1,9 @@
-name: 🎵 גלגל"צ → Spotify Sync
+name: Galgalatz Spotify Sync
 
 on:
   schedule:
-    # כל 4 דקות (GitHub Actions מאפשר מינימום כל דקה, אבל 4 דקות = שיר ממוצע)
     - cron: "*/4 * * * *"
-  workflow_dispatch:  # הפעלה ידנית מה-GitHub UI
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -19,12 +18,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
 
       - name: Install dependencies
         run: pip install requests
 
-      # שחזור קובץ מצב מ-cache (נשמר בין ריצות!)
       - name: Restore state
         uses: actions/cache@v4
         with:
@@ -39,13 +36,4 @@ jobs:
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
           SPOTIFY_PLAYLIST_ID: ${{ secrets.SPOTIFY_PLAYLIST_ID }}
-        
-        run: |
-          python3 -c "
-import requests
-r = requests.get('https://onlineradiobox.com/il/galgalatz/playlist/', headers={'User-Agent':'Mozilla/5.0'})
-print(r.status_code)
-import re
-songs = re.findall(r'class=\"track__artist\"[^>]*>([^<]+)</[^>]+>.*?class=\"track__title\"[^>]*>([^<]+)<', r.text, re.DOTALL)
-print(songs[:3])
-״
+        run: python galgalatz_sync.py
