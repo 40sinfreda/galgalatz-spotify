@@ -29,7 +29,7 @@ SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SPOTIFY_API_BASE = "https://api.spotify.com/v1"
 
 # PlayingList.net's live Galgalatz playlist on Spotify
-GALGALATZ_PLAYLIST_ID = "2SXRvfqiMBXFkaMi03npLZ"
+GALGALATZ_PLAYLIST_ID = "0t1jXQWrrZsRkj8nr4i6TC"
 
 
 def get_spotify_token(client_id, client_secret, refresh_token):
