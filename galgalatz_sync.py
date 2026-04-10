@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
 Galgalatz -> Spotify Playlist Sync
-Uses the official Galgalatz XML feed to get the current song.
-Plants your chosen artists every 10 songs.
+Creates playlist automatically on first run.
 """
 
 import os
@@ -14,7 +13,6 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
 
-# --- Your artists to plant every 10 Galgalatz songs ---
 MY_ARTISTS = [
     "Sean Levine",
     "Marli West",
@@ -46,8 +44,30 @@ def get_spotify_token(client_id, client_secret, refresh_token):
     return resp.json()["access_token"]
 
 
+def get_current_user_id(token):
+    resp = requests.get(
+        f"{SPOTIFY_API_BASE}/me",
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=10,
+    )
+    resp.raise_for_status()
+    return resp.json()["id"]
+
+
+def create_playlist(token, user_id):
+    resp = requests.post(
+        f"{SPOTIFY_API_BASE}/users/{user_id}/playlists",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        json={"name": "גלגלצ Live", "public": True, "description": "שירים מגלגלצ עם שתילות - נוצר אוטומטית"},
+        timeout=10,
+    )
+    resp.raise_for_status()
+    playlist_id = resp.json()["id"]
+    print(f"Created new playlist: {playlist_id}")
+    return playlist_id
+
+
 def get_now_playing():
-    """Fetch current song from Galgalatz official XML feed."""
     try:
         resp = requests.get(GALGALATZ_XML, timeout=10)
         resp.raise_for_status()
@@ -89,7 +109,6 @@ def get_random_track_from_artist(token, artist_name):
         return None
     artists = resp.json().get("artists", {}).get("items", [])
     if not artists:
-        print(f"Artist not found: {artist_name}")
         return None
     artist_id = artists[0]["id"]
     resp2 = requests.get(
@@ -158,6 +177,7 @@ def load_state():
     if STATE_FILE.exists():
         return json.loads(STATE_FILE.read_text())
     return {
+        "playlist_id": None,
         "galgalatz_count": 0,
         "last_song": None,
         "last_artist_index": -1,
@@ -173,7 +193,6 @@ def main():
     client_id = os.environ["SPOTIFY_CLIENT_ID"]
     client_secret = os.environ["SPOTIFY_CLIENT_SECRET"]
     refresh_token = os.environ["SPOTIFY_REFRESH_TOKEN"]
-    playlist_id = os.environ["SPOTIFY_PLAYLIST_ID"]
 
     print(f"Galgalatz -> Spotify | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
@@ -181,11 +200,22 @@ def main():
     print("Connected to Spotify")
 
     state = load_state()
+
+    # Create playlist if it doesn't exist yet
+    if not state.get("playlist_id"):
+        user_id = get_current_user_id(token)
+        playlist_id = create_playlist(token, user_id)
+        state["playlist_id"] = playlist_id
+        save_state(state)
+        print(f"Playlist created! Open it at: https://open.spotify.com/playlist/{playlist_id}")
+    else:
+        playlist_id = state["playlist_id"]
+        print(f"Using playlist: {playlist_id}")
+
     seen_uris = set(state.get("seen_uris", []))
     my_uris = set(get_my_playlist_uris(token, playlist_id))
     known_uris = seen_uris | my_uris
 
-    # Get current song from Galgalatz
     song = get_now_playing()
     if not song:
         print("Could not read from Galgalatz, skipping")
@@ -194,7 +224,6 @@ def main():
 
     print(f"Now playing: {song['artist']} - {song['title']}")
 
-    # Skip if same song as last time
     song_key = f"{song['artist']}|{song['title']}"
     if state.get("last_song") == song_key:
         print("Same song as last time, skipping")
@@ -203,20 +232,18 @@ def main():
 
     tracks_to_add = []
 
-    # Search for current song on Spotify
     uri = search_spotify_track(token, song["artist"], song["title"])
     if uri and uri not in known_uris:
         tracks_to_add.append(uri)
         known_uris.add(uri)
         state["galgalatz_count"] += 1
-        print(f"Found on Spotify: {song['artist']} - {song['title']}")
+        print(f"Found: {song['artist']} - {song['title']}")
     elif uri:
         print(f"Already in playlist: {song['artist']} - {song['title']}")
         state["galgalatz_count"] += 1
     else:
         print(f"Not found on Spotify: {song['artist']} - {song['title']}")
 
-    # Plant an artist every INSERT_EVERY_N songs
     if state["galgalatz_count"] >= INSERT_EVERY_N:
         state["last_artist_index"] = (state["last_artist_index"] + 1) % len(MY_ARTISTS)
         artist_name = MY_ARTISTS[state["last_artist_index"]]
@@ -231,7 +258,7 @@ def main():
         current_uris = get_my_playlist_uris(token, playlist_id)
         trim_playlist_if_needed(token, playlist_id, current_uris)
         if add_tracks_to_playlist(token, playlist_id, tracks_to_add):
-            print(f"Added {len(tracks_to_add)} track(s) to playlist!")
+            print(f"Added {len(tracks_to_add)} track(s)!")
 
     state["last_song"] = song_key
     state["seen_uris"] = list(known_uris)[-1000:]
