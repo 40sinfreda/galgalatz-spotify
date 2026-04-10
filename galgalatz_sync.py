@@ -45,14 +45,17 @@ def get_spotify_token(client_id, client_secret, refresh_token):
 
 
 def get_now_playing_galgalatz():
-    """Fetch latest song played on Galgalatz from radio.menu."""
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
-        resp = requests.get(GALGALATZ_URL, headers=headers, timeout=10)
+        resp = requests.get(
+            "https://onlineradiobox.com/il/galgalatz/playlist/",
+            headers=headers, timeout=10
+        )
         resp.raise_for_status()
-        html = resp.text
-        # Look for lines like: HH:MM Artist - Title
-        matches = re.findall(r'\d{2}:\d{2}\s+(.+?)\s*[-\u2013]\s*(.+?)(?=\s*\d{2}:\d{2}|\s*<|\n)', html)
+        matches = re.findall(
+            r'<td class="track__artist"[^>]*>(.*?)</td>.*?<td class="track__title"[^>]*>(.*?)</td>',
+            resp.text, re.DOTALL
+        )
         if matches:
             artist = re.sub(r'<[^>]+>', '', matches[0][0]).strip()
             title = re.sub(r'<[^>]+>', '', matches[0][1]).strip()
@@ -62,7 +65,6 @@ def get_now_playing_galgalatz():
     except Exception as e:
         print(f"WARNING: Could not fetch Galgalatz: {e}")
     return None
-
 
 def search_spotify_track(token, artist, title):
     for query in [f"track:{title} artist:{artist}", f"{title} {artist}"]:
