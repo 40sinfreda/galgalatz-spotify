@@ -41,4 +41,4 @@ jobs:
           SPOTIFY_PLAYLIST_ID: ${{ secrets.SPOTIFY_PLAYLIST_ID }}
         
         run: |
-          python3 -c "import requests; r=requests.get('https://radio.menu/stations/glz-co-il-galgalatz-91-8-fm/playlist/', headers={'User-Agent':'Mozilla/5.0'}); print(r.text[8000:12000])"
+          python3 -c "import requests; r=requests.get('https://radio.menu/stations/glz-co-il-galgalatz-91-8-fm/playlist/', headers={'User-Agent':'Mozilla/5.0'}); print(r.text[15000:30000])"
