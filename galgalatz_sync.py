@@ -201,16 +201,12 @@ def main():
 
     state = load_state()
 
-    # Create playlist if it doesn't exist yet
-    if not state.get("playlist_id"):
-        user_id = get_current_user_id(token)
-        playlist_id = create_playlist(token, user_id)
-        state["playlist_id"] = playlist_id
-        save_state(state)
-        print(f"Playlist created! Open it at: https://open.spotify.com/playlist/{playlist_id}")
-    else:
-        playlist_id = state["playlist_id"]
-        print(f"Using playlist: {playlist_id}")
+    playlist_id = os.environ.get("SPOTIFY_PLAYLIST_ID") or state.get("playlist_id")
+    if not playlist_id:
+        print("ERROR: No playlist ID found")
+        return
+    state["playlist_id"] = playlist_id
+    print(f"Using playlist: {playlist_id}")
 
     seen_uris = set(state.get("seen_uris", []))
     my_uris = set(get_my_playlist_uris(token, playlist_id))
