@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ignite Records</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fire: #F5A623;
+    --fire-dark: #E07B00;
+    --bg: #0D0D0D;
+    --bg2: #151515;
+    --bg3: #1E1E1E;
+    --text: #F0EDE8;
+    --text-muted: #A8A89E;
+    --border: rgba(245,166,35,0.15);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: rgba(13,13,13,0.95); backdrop-filter: blur(12px); border-bottom: 0.5px solid var(--border); gap: 1rem; }
+  .nav-logo { font-family: 'Bebas Neue', cursive; font-size: 1.3rem; letter-spacing: 0.1em; color: var(--fire); white-space: nowrap; flex-shrink: 0; }
+  .nav-logo span { color: var(--text); }
+  nav ul { list-style: none; display: flex; gap: 1.2rem; flex-wrap: nowrap; }
+  nav a { text-decoration: none; color: var(--text-muted); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.2s; white-space: nowrap; }
+  nav a:hover { color: var(--fire); }
+
+  .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 6rem 2rem 4rem; text-align: center; }
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 80%, rgba(245,166,35,0.07) 0%, transparent 70%); pointer-events: none; }
+  .hero-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(245,166,35,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,166,35,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+  .hero-logo { width: 90px; margin-bottom: 2rem; animation: pulse 4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.9; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+  .hero h1 { font-family: 'Bebas Neue', cursive; font-size: clamp(4rem, 12vw, 9rem); letter-spacing: 0.1em; line-height: 0.9; }
+  .hero h1 span { color: var(--fire); }
+  .hero-sub { font-size: 0.75rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-muted); margin-top: 1.5rem; }
+  .divider { width: 80px; height: 1px; background: linear-gradient(90deg, transparent, var(--fire), transparent); margin: 2rem auto; }
+  .cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 0.8rem 1.8rem; font-family: 'Barlow', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; border: 1px solid var(--fire); color: var(--fire); background: transparent; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .btn:hover, .btn-solid { background: var(--fire); color: var(--bg); }
+  .btn-solid:hover { background: var(--fire-dark); border-color: var(--fire-dark); }
+
+  section { padding: 6rem 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .label { font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--fire); margin-bottom: 0.8rem; }
+  .title { font-family: 'Bebas Neue', cursive; font-size: clamp(2.5rem, 6vw, 4.5rem); letter-spacing: 0.05em; line-height: 1; margin-bottom: 3rem; }
+
+  #artists { background: var(--bg2); }
+  .artists-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2px; }
+  .artist-card { position: relative; overflow: hidden; background: var(--bg3); aspect-ratio: 3/4; cursor: pointer; }
+  .artist-card img { width: 100%; height: 100%; object-fit: cover; object-position: center top; filter: grayscale(20%) brightness(0.75); transition: all 0.5s ease; }
+  .artist-card:hover img { filter: grayscale(0%) brightness(0.88); transform: scale(1.04); }
+  .artist-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transition: background 0.4s; }
+  .artist-card:hover .artist-placeholder { background: #111; }
+  .artist-placeholder svg { width: 70px; height: 70px; opacity: 0.12; transition: opacity 0.4s; }
+  .artist-card:hover .artist-placeholder svg { opacity: 0.2; }
+  .artist-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 3rem 1.5rem 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.93)); transform: translateY(40%); transition: transform 0.4s ease; }
+  .artist-card:hover .artist-info { transform: translateY(0); }
+  .artist-name { font-family: 'Bebas Neue', cursive; font-size: 2.2rem; letter-spacing: 0.08em; }
+  .artist-genre { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--fire); margin-top: 0.3rem; }
+  .artist-links { display: flex; gap: 1rem; margin-top: 1rem; opacity: 0; transition: opacity 0.3s 0.1s; }
+  .artist-card:hover .artist-links { opacity: 1; }
+  .artist-link { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; border-bottom: 1px solid rgba(245,166,35,0.3); padding-bottom: 2px; transition: color 0.2s; }
+  .artist-link:hover { color: var(--fire); }
+
+  #playlist { background: var(--bg); }
+  .playlist-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .playlist-text p { color: var(--text-muted); line-height: 1.9; margin-bottom: 1.5rem; }
+  .stats { display: flex; gap: 2.5rem; margin: 2rem 0; }
+  .stat-num { font-family: 'Bebas Neue', cursive; font-size: 2.8rem; color: var(--fire); line-height: 1; }
+  .stat-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-top: 0.2rem; }
+  .playlist-embed { border: 0.5px solid var(--border); overflow: hidden; }
+
+  #join { background: var(--bg2); text-align: center; }
+  #join .title { margin-bottom: 1rem; }
+  #join > .container > p { color: var(--text-muted); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.9; }
+
+  footer { background: var(--bg); border-top: 0.5px solid var(--border); padding: 2rem 3rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .footer-logo { font-family: 'Bebas Neue', cursive; font-size: 1.1rem; letter-spacing: 0.15em; color: var(--fire); }
+  footer p { font-size: 0.72rem; color: var(--text-muted); }
+
+  *:focus-visible { outline: 2px solid var(--fire); outline-offset: 3px; }
+  .album-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+  .accessibility-btn { position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 200; background: var(--fire); color: var(--bg); border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.4); transition: transform 0.2s; }
+  .accessibility-btn:hover { transform: scale(1.1); }
+  .accessibility-panel { position: fixed; bottom: 5rem; left: 1.5rem; z-index: 200; background: var(--bg2); border: 1px solid var(--border); padding: 1.2rem; min-width: 200px; display: none; }
+  .accessibility-panel.open { display: block; }
+  .accessibility-panel h3 { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fire); margin-bottom: 1rem; }
+  .acc-option { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.8rem; color: var(--text-muted); }
+  .acc-toggle { background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 0.3rem 0.8rem; font-size: 0.7rem; cursor: pointer; letter-spacing: 0.1em; }
+  .acc-toggle.active { background: var(--fire); color: var(--bg); border-color: var(--fire); }
+  body.large-text { font-size: 120%; }
+  body.high-contrast { --text-muted: #CCCCCC; filter: contrast(1.2); }
+  @media (max-width: 768px) {
+    .album-grid { grid-template-columns: 1fr !important; }
+    .album-grid > div:last-child { order: -1; }
+  }
+  .artist-card:focus { outline: 2px solid var(--fire); outline-offset: 3px; }
+    .skip-link { position:absolute; top:-40px; left:1rem; background:var(--fire); color:var(--bg); padding:0.5rem 1rem; font-size:0.8rem; font-weight:600; text-decoration:none; transition:top 0.2s; z-index:999; }
+  *:focus-visible { outline: 2px solid var(--fire); outline-offset: 3px; }
+  .album-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+  .accessibility-btn { position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 200; background: var(--fire); color: var(--bg); border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.4); transition: transform 0.2s; }
+  .accessibility-btn:hover { transform: scale(1.1); }
+  .accessibility-panel { position: fixed; bottom: 5rem; left: 1.5rem; z-index: 200; background: var(--bg2); border: 1px solid var(--border); padding: 1.2rem; min-width: 200px; display: none; }
+  .accessibility-panel.open { display: block; }
+  .accessibility-panel h3 { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fire); margin-bottom: 1rem; }
+  .acc-option { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.8rem; color: var(--text-muted); }
+  .acc-toggle { background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 0.3rem 0.8rem; font-size: 0.7rem; cursor: pointer; letter-spacing: 0.1em; }
+  .acc-toggle.active { background: var(--fire); color: var(--bg); border-color: var(--fire); }
+  body.large-text { font-size: 120%; }
+  body.high-contrast { --text-muted: #CCCCCC; filter: contrast(1.2); }
+  @media (max-width: 768px) {
+    .album-grid { grid-template-columns: 1fr !important; }
+    .album-grid > div:last-child { order: -1; }
+  }
+  .artist-card:focus { outline: 2px solid var(--fire); outline-offset: 3px; }
+    .skip-link:focus { top:0; }
+  @media (max-width: 768px) {
+    nav { padding: 0.8rem 1rem; }
+    nav ul { gap: 0.8rem; }
+    .playlist-wrap { grid-template-columns: 1fr !important; gap: 2rem; }
+    footer { flex-direction: column; text-align: center; }
+    section { padding: 4rem 1rem; }
+    .artists-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav role="navigation" aria-label="Main navigation">
+  <a href="/" style="text-decoration: none; color: inherit;">
+  <div class="nav-logo">IGNITE <span>RECORDS</span></div>
+  </a>
+  <ul>
+    <li><a href="#artists">Artists</a></li>
+    <li><a href="#playlist">Playlist</a></li>
+    <li><a href="#top100">Top 100</a></li>
+    <li><a href="#join">Join</a></li>
+  </ul>
+</nav>
+
+<main id="main"><section class="hero" aria-label="Hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <svg class="hero-logo" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 5 L65 38 L80 22 L68 58 L84 46 L62 82 L70 72 L50 105 L30 72 L38 82 L16 46 L32 58 L20 22 L35 38 Z" fill="#F5A623"/>
+    <path d="M50 32 L59 52 L70 42 L61 67 L72 60 L55 88 L50 80 L45 88 L28 60 L39 67 L30 42 L41 52 Z" fill="#C06800"/>
+    <path d="M50 58 L56 72 L61 64 L55 82 L50 92 L45 82 L39 64 L44 72 Z" fill="#FFD080"/>
+  </svg>
+  <h1>IGNITE<br><span>RECORDS</span></h1>
+  <p class="hero-sub">Music Label &nbsp;&middot;&nbsp; Independent &nbsp;&middot;&nbsp; Original</p>
+  <div class="divider"></div>
+  <div class="cta">
+    <a href="#playlist" class="btn btn-solid" aria-label="Listen to Galgalatz Live Playlist">Listen Now</a>
+    <a href="#join" class="btn" aria-label="Apply to join Ignite Records roster">Join the Roster</a>
+  </div>
+</section>
+
+<section id="artists" aria-labelledby="artists-heading">
+  <div class="container">
+    <p class="label">Our Roster</p>
+    <h2 class="title" id="artists-heading">The Artists</h2>
+    <div class="artists-grid">
+
+      <a href="sean-levine.html" style="text-decoration: none; color: inherit;">
+      <div class="artist-card" role="article" tabindex="0" aria-label="Sean Levine - artist">
+        <img src="SL.jpg" style="object-position: center 20%;" alt="Sean Levine, guitarist performing under a starry sky">
+        <div class="artist-info">
+          <div class="artist-name">Sean Levine</div>
+          <div class="artist-genre">Singer / Songwriter</div>
+          <div class="artist-links">
+            <a href="https://open.spotify.com/artist/6wKZVhE7JPFgDdHonDuWiJ" target="_blank" class="artist-link">Spotify &#8599;</a>
+          </div>
+        </div>
+      </div>
+      </a>
+
+
+      <a href="marli-west.html" style="text-decoration: none; color: inherit;">
+      <div class="artist-card" role="article" tabindex="0" aria-label="Marli West - artist">
+        <img src="emoXx.jpg" style="object-position: center 15%;" alt="Marli West, singer performing with intensity">
+        <div class="artist-info">
+          <div class="artist-name">Marli West</div>
+          <div class="artist-genre">Singer / Songwriter</div>
+          <div class="artist-links">
+            <a href="https://open.spotify.com/artist/1YYhdcqL8v4RBGWUD2XwNX" target="_blank" class="artist-link">Spotify &#8599;</a>
+          </div>
+        </div>
+      </div>
+      </a>
+
+
+      <a href="teomic-fire.html" style="text-decoration: none; color: inherit;">
+      <div class="artist-card" role="article" tabindex="0" aria-label="Teomic Fire - artist">
+        <img src="teomic.jpg" style="object-position: center center; object-fit: cover; background: #000;" alt="Teomic Fire High Energy album cover">
+        <div class="artist-info">
+          <div class="artist-name">Teomic Fire</div>
+          <div class="artist-genre">Electronic / High Energy</div>
+          <div class="artist-links">
+            <a href="https://open.spotify.com/artist/1q4AeO5g6ahHV5GxbBYoEt" target="_blank" class="artist-link">Spotify &#8599;</a>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div style="margin-top:4rem;">
+      <p class="label">Latest Release</p>
+      <h3 style="font-family:'Bebas Neue',cursive;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:0.05em;margin-bottom:2rem;">Teomic Fire &mdash; High Energy</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;" class="album-grid">
+        <div>
+          <p style="color:var(--text-muted);line-height:1.9;margin-bottom:1.5rem;">10 explosive tracks of pure high energy music. Out now on all platforms.</p>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <a href="https://open.spotify.com/album/4RikPOmKaec4BVtPx7fGhi" target="_blank" class="btn btn-solid">Listen on Spotify</a>
+            <a href="https://music.youtube.com/channel/UCujwPUEreV_F1bcEJrEFWqA" target="_blank" class="btn btn-solid">YouTube Music</a>
+          </div>
+        </div>
+        <div style="border:0.5px solid var(--border);overflow:hidden;">
+          <iframe title="Teomic Fire - High Energy album player" src="https://open.spotify.com/embed/album/4RikPOmKaec4BVtPx7fGhi?utm_source=generator&theme=0" width="100%" height="380" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:4rem;">
+      <p class="label">Latest Release</p>
+      <h3 style="font-family:'Bebas Neue',cursive;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:0.05em;margin-bottom:2rem;">Marli West &mdash; What Did You Do?</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;" class="album-grid">
+        <div>
+          <p style="color:var(--text-muted);line-height:1.9;margin-bottom:1.5rem;">10 tracks of raw, honest songwriting. Marli West's debut album is out now on all platforms.</p>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <a href="https://open.spotify.com/album/5xkKPkkgkDH2NACvH8pZC2" target="_blank" class="btn btn-solid">Listen on Spotify</a>
+            <a href="https://music.youtube.com/channel/UCXziCUDkAm2Ew325KA9RrfQ" target="_blank" class="btn btn-solid">YouTube Music</a>
+          </div>
+        </div>
+        <div style="border:0.5px solid var(--border);overflow:hidden;">
+          <iframe title="Marli West - What Did You Do? album player" src="https://open.spotify.com/embed/album/5xkKPkkgkDH2NACvH8pZC2?utm_source=generator&theme=0" width="100%" height="380" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:4rem;">
+      <p class="label">Latest Release</p>
+      <h3 style="font-family:'Bebas Neue',cursive;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:0.05em;margin-bottom:2rem;">Sean Levine &mdash; Happy Days</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;" class="album-grid">
+        <div>
+          <p style="color:var(--text-muted);line-height:1.9;margin-bottom:1.5rem;">10 uplifting, feel-good tracks. Sean Levine's debut album is out now on all platforms.</p>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <a href="https://open.spotify.com/album/1VKxMF9LDjn9fFZ6SXQ1EQ" target="_blank" class="btn btn-solid">Listen on Spotify</a>
+            <a href="https://music.youtube.com/channel/UCwMIvUO3oZrY_ZTWBWibxlg" target="_blank" class="btn btn-solid">YouTube Music</a>
+          </div>
+        </div>
+        <div style="border:0.5px solid var(--border);overflow:hidden;">
+          <iframe title="Sean Levine - Happy Days album player" src="https://open.spotify.com/embed/album/1VKxMF9LDjn9fFZ6SXQ1EQ?utm_source=generator&theme=0" width="100%" height="380" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="top100" style="background: var(--bg2);">
+  <div class="container">
+    <div class="playlist-wrap">
+      <div class="playlist-text">
+        <img src="top100.jpg" alt="TOP 100 US" style="width:100%;max-width:320px;display:block;margin-bottom:2rem;border-radius:4px;">
+        <p class="label">Weekly Chart</p>
+        <h2 class="title">TOP 100 US</h2>
+        <p style="color:var(--text-muted);line-height:1.9;margin-bottom:1.5rem;">The best songs in America, updated every Wednesday. 100 tracks featuring the biggest hits alongside selected Ignite Records artists.</p>
+        <div class="stats">
+          <div><div class="stat-num">100</div><div class="stat-label">Songs</div></div>
+          <div><div class="stat-num">Weekly</div><div class="stat-label">Updated</div></div>
+          <div><div class="stat-num">Wed</div><div class="stat-label">Every Week</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
+          <a href="https://open.spotify.com/playlist/1X6UzSIauC4xc061NcFL2w" target="_blank" class="btn btn-solid">Open on Spotify</a>
+          <a href="submission.html" class="btn">Submit Your Track</a>
+        </div>
+      </div>
+      <div class="playlist-embed">
+        <iframe title="TOP 100 US Playlist" src="https://open.spotify.com/embed/playlist/1X6UzSIauC4xc061NcFL2w?utm_source=generator&theme=0" width="100%" height="452" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="playlist" aria-labelledby="playlist-heading">
+  <div class="container">
+    <div class="playlist-wrap">
+      <div class="playlist-text">
+        <img src="glive.jpg" alt="Galgalatz Live - גלגלצ לייב" lang="he" style="width:100%;max-width:320px;display:block;margin-bottom:2rem;border-radius:4px;">
+        <p class="label">Live on Air</p>
+        <h2 class="title" id="playlist-heading">Galgalatz Live Playlist</h2>
+        <p>A curated playlist that updates automatically with songs played live on Galgalatz — Israel's most listened-to radio station. Our artists are featured alongside the best in Israeli and international music.</p>
+        <div class="stats">
+          <div><div class="stat-num">200</div><div class="stat-label">Songs</div></div>
+          <div><div class="stat-num">24/7</div><div class="stat-label">Updated</div></div>
+          <div><div class="stat-num">Live</div><div class="stat-label">Radio</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
+          <a href="https://open.spotify.com/playlist/2sCgMi2KCgRfeqWIdjJNxv" target="_blank" class="btn btn-solid">Open on Spotify</a>
+          <a href="galgalatz-live.html" class="btn">Submit Your Track</a>
+        </div>
+      </div>
+      <div class="playlist-embed">
+        <iframe title="Galgalatz Live Playlist player" src="https://open.spotify.com/embed/playlist/2sCgMi2KCgRfeqWIdjJNxv?utm_source=generator&theme=0" width="100%" height="452" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="join" aria-labelledby="join-heading">
+  <div class="container">
+    <p class="label">For Artists</p>
+    <h2 class="title" id="join-heading">Join Ignite Records</h2>
+    <p>Are you an independent artist? Apply to be featured in one of our playlists and join the Ignite Records roster.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="submission.html" class="btn btn-solid">Submit to TOP 100 US</a>
+      <a href="galgalatz-live.html" class="btn btn-solid">Submit to Galgalatz Live</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer role="contentinfo">
+  <div class="footer-logo">IGNITE RECORDS</div>
+  <p>&copy; 2026 Ignite Records. All rights reserved.</p>
+  <p>Independent Music Label</p>
+</footer>
+
+<button class="accessibility-btn" onclick="document.querySelector('.accessibility-panel').classList.toggle('open')" aria-label="Accessibility options" title="Accessibility">
+  <span aria-hidden="true">&#9999;</span>
+</button>
+
+<div class="accessibility-panel" role="dialog" aria-label="Accessibility settings">
+  <h3>Accessibility</h3>
+  <div class="acc-option">
+    <span>Large Text</span>
+    <button class="acc-toggle" onclick="document.body.classList.toggle('large-text'); this.classList.toggle('active')">Toggle</button>
+  </div>
+  <div class="acc-option">
+    <span>High Contrast</span>
+    <button class="acc-toggle" onclick="document.body.classList.toggle('high-contrast'); this.classList.toggle('active')">Toggle</button>
+  </div>
+  <div class="acc-option">
+    <span>Stop Animations</span>
+    <button class="acc-toggle" onclick="document.body.classList.toggle('no-anim'); this.classList.toggle('active')">Toggle</button>
+  </div>
+</div>
+
+<style>
+body.no-anim * { animation: none !important; transition: none !important; }
+</style>
+
+</body>
+</html>
