@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marli West - Ignite Records</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fire: #F5A623;
+      --fire-dark: #E07B00;
+      --bg: #0D0D0D;
+      --bg2: #151515;
+      --bg3: #1E1E1E;
+      --text: #F0EDE8;
+      --text-muted: #A8A89E;
+      --border: rgba(245,166,35,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    nav {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav a {
+      color: var(--fire);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    nav a:hover { color: var(--fire-dark); }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(245,166,35,0.1) 0%, transparent 100%);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .hero-image {
+      width: 300px;
+      height: 300px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin: 0 auto 2rem;
+      border: 2px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: 0.1em;
+      color: var(--fire);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .bio {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem;
+      margin: 3rem auto;
+      line-height: 1.9;
+      color: #d0d0d0;
+    }
+
+    .bio p {
+      margin-bottom: 1.5rem;
+    }
+
+    .ai-badge {
+      display: inline-block;
+      background: var(--fire);
+      color: var(--bg);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-top: 1.5rem;
+    }
+
+    .upcoming {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem;
+      margin: 3rem auto;
+      text-align: center;
+    }
+
+    .upcoming h2 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      color: var(--fire);
+      margin-bottom: 1rem;
+    }
+
+    .latest {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      background: var(--fire);
+      color: var(--bg);
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: var(--fire-dark); }
+
+    .contact-form {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem;
+      margin: 3rem auto;
+      max-width: 600px;
+    }
+
+    .contact-form h3 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      color: var(--fire);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--fire);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      margin-top: 4rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--fire);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <a href="https://igniterecords26.com/">← Back to Ignite Records</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="container">
+      <img src="emoXx.jpg" alt="Marli West" class="hero-image">
+      <h1>Marli West</h1>
+      <p class="subtitle">Singer / Songwriter / AI Persona</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="bio">
+      <p>Marli West is a singer-songwriter who represents the raw, exposed, and powerful voice of modern rock. Born on January 12, 2002 in Yorkshire, England, she carries with her the unique blend between the quiet of northern England and the hectic pace of urban life.</p>
+
+      <p>Her music is characterized by layers of raw emotion, as heard in her hauntingly beautiful creation "Missing You Bare". In this song, Marli returns to her British roots and blends exposed acoustic guitar picking against the backdrop of rainy London night sounds. Her lyrics describe deep and relentless longing, one that "roots run too deep within the concrete", and develop into an emotional climax accompanied by dramatic strings.</p>
+
+      <p>Her stage presence is an integral part of her artistic brand. With a distinctive rock-and-roll aesthetic: leather studded clothing, dark wild hair, and a magnetic stage presence. She succeeds in filling enormous stages under spotlights and rain of confetti. Despite her digital roots, Marli West proves that the blend between deep human inspiration and modern production capabilities creates music that "flows from the eyes" and remains etched in the hearts of listeners.</p>
+
+      <span class="ai-badge">AI PRODUCT</span>
+    </div>
+
+    <div class="upcoming">
+      <h2>Latest Release</h2>
+      <p class="latest">What Did You Do? (Album)</p>
+      <div class="buttons">
+        <a href="https://open.spotify.com/album/5xkKPkkgkDH2NACvH8pZC2" target="_blank" class="btn">Listen on Spotify</a>
+        <a href="https://music.youtube.com/channel/UCXziCUDkAm2Ew325KA9RrfQ" target="_blank" class="btn">YouTube Music</a>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <h3>Get in Touch</h3>
+      <form action="mailto:ignite.records2026@gmail.com" method="POST" enctype="text/plain">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea name="message" required></textarea>
+        </div>
+        <button type="submit" class="btn">Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Ignite Records. All rights reserved. | <a href="https://igniterecords26.com/">Back to Home</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
